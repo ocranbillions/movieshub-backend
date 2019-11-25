@@ -1,8 +1,9 @@
 import os
 from flask_cors import CORS
 from flask import Flask, jsonify
-from config import setup_db
-from manage import Person
+from models import setup_db
+from models import Movie, Actor
+
 
 def create_app(test_config=None):
 
@@ -12,20 +13,18 @@ def create_app(test_config=None):
 
     @app.route('/')
     def get_greeting():
-        excited = os.environ['EXCITED']
-        greeting = "Hello" 
-        if excited == 'true': greeting = greeting + "!!!!!"
-        return greeting
+        return 'Welcome to Movies Hub!'
 
-    @app.route('/coolkids')
-    def be_cool():
-        people = Person.query.all()
+    @app.route('/movies')
+    def get_movies():
+        movies = Movie.query.all()
         return jsonify({
-            'message': 'Be cool, man, be coooool! You\'re almost a FSND grad!',
-            'people': [person.format() for person in people],
+            'message': 'Be cool, man, be coooool! You\'re almost a FSND grad!!!',
+            'moves': [movie.format() for movie in movies],
         }), 200
 
     return app
+
 
 app = create_app()
 
