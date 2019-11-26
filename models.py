@@ -34,16 +34,20 @@ class Movie(db.Model):
         self.release_year = release_year
 
 
+    # def insert(self):
+    #     try:
+    #         db.session.add(self)
+    #         db.session.commit()
+    #     except SQLAlchemyError:
+    #         db.session.rollback()
+    #         print(sys.exc_info())
+    #         # raise
+    #     finally:
+    #         db.session.close()
+    
     def insert(self):
-        try:
-            db.session.add(self)
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            print(sys.exc_info())
-            # raise
-        finally:
-            db.session.close()
+        db.session.add(self)
+        db.session.commit()
 
 
     def delete(self):
@@ -59,14 +63,8 @@ class Movie(db.Model):
 
 
     def update(self):
-        try:
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            print(sys.exc_info())
-            # raise
-        finally:
-            db.session.close()
+        db.session.commit()
+
 
     def format(self):
         return {

@@ -29,21 +29,23 @@ class MHTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
+    #  GET /movies
     def test_get_movies(self):
         response = self.client().get('/movies')
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['movies'])
-        self.assertEqual(len(data['movies']), 1)
+        # self.assertEqual(len(data['movies']), 1)
     
+    # GET /movies/id
     def test_get_movie_by_id(self):
         response = self.client().get('/movies/1')
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['movie'])
-        self.assertEqual(data['movie']['title'], 'Avengers')
+        self.assertEqual(data['movie']['title'], 'Black Panther')
     
     def test_get_movie_by_id_404(self):
         response = self.client().get('/movies/10000')
@@ -53,98 +55,81 @@ class MHTestCase(unittest.TestCase):
         self.assertTrue(data['message'])
         self.assertEqual(data['message'], 'Resource not found')
 
-    # def test_get_questions(self):
-    #     response = self.client().get('/questions')
-    #     data = json.loads(response.data)
+    # POST /movies 
+    def test_post_movie(self):
+        payload = {
+            'title': 'Jumanji',
+            'release_year': 1981,
+        }
+        response = self.client().post('/movies', json=payload)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], 'Movie added')
+        self.assertEqual(data['movie']['title'], 'Jumanji')
 
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTrue(data['total_questions'])
-    #     self.assertTrue(data['categories'])
-    #     self.assertTrue(data['questions'])
+    def test_post_movie_400(self):
+        payload = {
+            'title': '',
+            'release_year': '',
+        }
+        response = self.client().post('/movies', json=payload)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Bad Request, pls check your inputs')
 
-    # def test_successful_delete(self):
-    #     res = self.client().delete('/questions/11')
-    #     data = json.loads(res.data)
-    #     self.assertEqual(res.status_code, 200)
-    #     self.assertEqual(data['success'], True)
-    #     self.assertEqual(data['message'], 'Successfully deleted')
+    
+    # PATCH /movies
+    def test_edit_movie(self):
+        payload = {
+            'title': 'Black Panther',
+            'release_year': 2018,
+        }
+        response = self.client().patch('/movies/1', json=payload)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], 'Movie updated')
+        self.assertEqual(data['movie']['title'], 'Black Panther')
 
-    # def test_unsuccessful_delete(self):
-    #     res = self.client().delete('/questions/10000')
-    #     data = json.loads(res.data)
-    #     self.assertEqual(res.status_code, 422)
-    #     self.assertEqual(data['success'], False)
-    #     self.assertEqual(data['message'], 'Unprocessable Entity')
+    def test_edit_movie_400(self):
+        payload = {
+            'title': '',
+            'release_year': '',
+        }
+        response = self.client().patch('/movies/1', json=payload)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Bad Request, pls check your inputs')
 
-    # def test_create_question(self):
-    #     payload = {
-    #         'question': 'The answer to life, the universe and everything?',
-    #         'answer': 42,
-    #         'difficulty': 3,
-    #         'category': 1,
-    #     }
-    #     response = self.client().post('/questions', json=payload)
-    #     data = json.loads(response.data)
-    #     self.assertEqual(response.status_code, 201)
-    #     self.assertEqual(data['success'], True)
-    #     self.assertEqual(data['message'], 'Successfully Created!')
+    def test_edit_movie_404(self):
+        payload = {
+            'title': 'Black Panther',
+            'release_year': 2018,
+        }
+        response = self.client().patch('/movies/500000', json=payload)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Resource not found')
+    
+    # DELETE /movies/id
+    def test_delete_movie(self):
+        response = self.client().delete('/movies/12')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], 'Movie deleted')
 
-    # def test_400_create_question(self):
-    #     payload = {
-    #         'question': '',
-    #         'answer': '',
-    #         'difficulty': 3,
-    #         'category': 1,
-    #     }
-    #     response = self.client().post('/questions', json=payload)
-    #     data = json.loads(response.data)
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(data['success'], False)
-    #     self.assertEqual(data['message'], 'Bad Request, pls check your inputs')
+    def test_delete_movie_404(self):
+        response = self.client().delete('/movies/110000')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Resource not found')
 
-    # def test_search_questions(self):
-    #     payload = {
-    #         'searchTerm': 'the human body',
-    #     }
-    #     response = self.client().post('/questions/search', json=payload)
-    #     data = json.loads(response.data)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(data['success'], True)
-    #     self.assertEqual(len(data['questions']), 1)
-
-    # def test_400_search_questions(self):
-    #     payload = {
-    #         'searchTerm': '',
-    #     }
-    #     response = self.client().post('/questions/search', json=payload)
-    #     data = json.loads(response.data)
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(data['success'], False)
-    #     self.assertEqual(data['message'], 'Bad Request, pls check your inputs')
-
-    # def test_404_search_questions(self):
-    #     payload = {
-    #         'searchTerm': 'somerandomsearchstring',
-    #     }
-    #     response = self.client().post('/questions/search', json=payload)
-    #     data = json.loads(response.data)
-    #     self.assertEqual(response.status_code, 404)
-    #     self.assertEqual(data['success'], False)
-    #     self.assertEqual(data['message'], 'Resource not found')
-
-    # def test_game_play(self):
-    #     payload = {
-    #         'previous_questions': [3],
-    #         'quiz_category': {
-    #             'type': 'Sports',
-    #             'id': 6
-    #         }
-    #     }
-    #     response = self.client().post('/quizzes', json=payload)
-    #     data = json.loads(response.data)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(data['success'], True)
-    #     self.assertTrue(data['question'])
 
 # dropdb trivia_test && createdb trivia_test
 # psql trivia_test < trivia.psql && python test_flaskr.py
