@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import os
+import sys
 import json
 
 database_path = os.environ['DATABASE_URL']
@@ -22,32 +23,56 @@ Movie
 Have title and release year
 '''
 class Movie(db.Model):  
-  __tablename__ = 'movies'
+    __tablename__ = 'movies'
 
-  id = Column(Integer, primary_key=True)
-  title = Column(String)
-  release_year = Column(String)
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    release_year = Column(String)
 
-  def __init__(self, title, release_date):
-    self.title = title
-    self.release_date = release_date
-  
-  def insert(self):
-    db.session.add(self)
-    db.session.commit()
+    def __init__(self, title, release_year):
+        self.title = title
+        self.release_year = release_year
 
-  def delete(self):
-      db.session.delete(self)
-      db.session.commit()
-  
-  def update(self):
-      db.session.commit()
 
-  def format(self):
-    return {
-      'id': self.id,
-      'title': self.title,
-      'release_date': self.release_date}
+    def insert(self):
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+            print(sys.exc_info())
+            # raise
+        finally:
+            db.session.close()
+
+
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+            print(sys.exc_info())
+            # raise
+        finally:
+            db.session.close()
+
+
+    def update(self):
+        try:
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+            print(sys.exc_info())
+            # raise
+        finally:
+            db.session.close()
+
+    def format(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'release_year': self.release_year}
   
 
 
@@ -56,32 +81,50 @@ Actor
 Have name, age, and gender
 '''
 class Actor(db.Model):  
-  __tablename__ = 'actors'
+    __tablename__ = 'actors'
 
-  id = Column(Integer, primary_key=True)
-  name = Column(String)
-  age = Column(Integer)
-  gender = Column(String)
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    age = Column(Integer)
+    gender = Column(String)
 
-  def __init__(self, name, age, gender):
-    self.name = name
-    self.age = age
-    self.gender = gender
+    def __init__(self, name, age, gender):
+        self.name = name
+        self.age = age
+        self.gender = gender
   
-  def insert(self):
-    db.session.add(self)
-    db.session.commit()
+    def insert(self):
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+            print(sys.exc_info())
+        finally:
+            db.session.close()
 
-  def delete(self):
-      db.session.delete(self)
-      db.session.commit()
-  
-  def update(self):
-      db.session.commit()
+    def delete(self):
+        try:
+            db.session.delete(self)
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+            print(sys.exc_info())
+        finally:
+            db.session.close()
+    
+    def update(self):
+        try:
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+            print(sys.exc_info())
+        finally:
+            db.session.close()
 
-  def format(self):
-    return {
-      'id': self.id,
-      'name': self.name,
-      'age': self.age,
-      'gender': self.gender}
+    def format(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'age': self.age,
+            'gender': self.gender}
