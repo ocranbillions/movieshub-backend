@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, create_engine
+from sqlalchemy import Column, String, Integer, create_engine, DateTime
 from flask_sqlalchemy import SQLAlchemy
 import os
 import sys
@@ -20,18 +20,18 @@ def setup_db(app, database_path=database_path):
 
 '''
 Movie
-Have title and release year
+Have title and release date
 '''
 class Movie(db.Model):  
     __tablename__ = 'movies'
 
     id = Column(Integer, primary_key=True)
     title = Column(String)
-    release_year = Column(String)
+    release_date = Column(DateTime())
 
-    def __init__(self, title, release_year):
+    def __init__(self, title, release_date):
         self.title = title
-        self.release_year = release_year
+        self.release_date = release_date
 
 
     # def insert(self):
@@ -51,16 +51,8 @@ class Movie(db.Model):
 
 
     def delete(self):
-        try:
-            db.session.delete(self)
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            print(sys.exc_info())
-            # raise
-        finally:
-            db.session.close()
-
+        db.session.delete(self)
+        db.session.commit()
 
     def update(self):
         db.session.commit()
@@ -70,7 +62,7 @@ class Movie(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'release_year': self.release_year}
+            'release_date': self.release_date}
   
 
 
@@ -92,33 +84,16 @@ class Actor(db.Model):
         self.gender = gender
   
     def insert(self):
-        try:
-            db.session.add(self)
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            print(sys.exc_info())
-        finally:
-            db.session.close()
+        db.session.add(self)
+        db.session.commit()
 
     def delete(self):
-        try:
-            db.session.delete(self)
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            print(sys.exc_info())
-        finally:
-            db.session.close()
+        db.session.delete(self)
+        db.session.commit()
     
     def update(self):
-        try:
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            print(sys.exc_info())
-        finally:
-            db.session.close()
+        db.session.commit()
+
 
     def format(self):
         return {
