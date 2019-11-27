@@ -2,6 +2,7 @@ import os
 from flask_cors import CORS
 from flask import Flask, jsonify, abort, request
 from models import setup_db, db, Movie, Actor
+from auth.auth import AuthError, requires_auth
 from utils import *
 
 
@@ -17,7 +18,8 @@ def create_app(test_config=None):
 
 
     @app.route('/movies')
-    def get_movies():
+    @requires_auth('get:movies')
+    def get_movies(jwt):
         movies = Movie.query.all()
         return jsonify({
             'success': True,
@@ -26,7 +28,8 @@ def create_app(test_config=None):
         
         
     @app.route('/movies/<int:id>')
-    def get_movie_by_id(id):
+    @requires_auth('get:movies')
+    def get_movie_by_id(jwt, id):
         movie = Movie.query.get(id)
 
         if movie is None:
@@ -39,7 +42,8 @@ def create_app(test_config=None):
     
 
     @app.route('/movies', methods=['POST'])
-    def post_movie():
+    @requires_auth('post:movies')
+    def post_movie(jwt):
         data = request.get_json()
         title = data.get('title', '')
         date = data.get('release_date', '')
@@ -59,7 +63,8 @@ def create_app(test_config=None):
     
 
     @app.route('/movies/<int:id>', methods=['PATCH'])
-    def edit_movie(id):
+    @requires_auth('patch:movies')
+    def edit_movie(jwt, id):
         data = request.get_json()
         title = data.get('title', '')
         date = data.get('release_date', '')
@@ -87,7 +92,8 @@ def create_app(test_config=None):
 
     
     @app.route('/movies/<int:id>', methods=['DELETE'])
-    def delete_movie(id):
+    @requires_auth('delete:movies')
+    def delete_movie(jwt, id):
         movie = Movie.query.get(id)
 
         if movie is None:
@@ -108,7 +114,8 @@ def create_app(test_config=None):
     ACTORS ENDPOINTS   
     '''
     @app.route('/actors')
-    def get_actors():
+    @requires_auth('get:actors')
+    def get_actors(jwt):
         actors = Actor.query.all()
         return jsonify({
             'success': True,
@@ -117,7 +124,8 @@ def create_app(test_config=None):
         
         
     @app.route('/actors/<int:id>')
-    def get_actor_by_id(id):
+    @requires_auth('get:movies')
+    def get_actor_by_id(jwt, id):
         actor = Actor.query.get(id)
 
         if actor is None:
@@ -130,7 +138,8 @@ def create_app(test_config=None):
 
 
     @app.route('/actors', methods=['POST'])
-    def post_actor():
+    @requires_auth('post:actors')
+    def post_actor(jwt):
         data = request.get_json()
         name = data.get('name', '')
         age = data.get('age', '')
@@ -151,7 +160,8 @@ def create_app(test_config=None):
 
 
     @app.route('/actors/<int:id>', methods=['PATCH'])
-    def edit_actor(id):
+    @requires_auth('patch:actors')
+    def edit_actor(jwt, id):
         data = request.get_json()
         name = data.get('name', '')
         age = data.get('age', '')
@@ -180,7 +190,8 @@ def create_app(test_config=None):
             abort(500)
     
     @app.route('/actors/<int:id>', methods=['DELETE'])
-    def delete_actor(id):
+    @requires_auth('delete:actors')
+    def delete_actor(jwt, id):
         actor = Actor.query.get(id)
 
         if actor is None:
@@ -222,6 +233,25 @@ def create_app(test_config=None):
             "success": False,
             "message": "Something went wrong, please try again"
         }), 500
+
+    # handle unauthorized request errors
+    @app.errorhandler(401)
+    def unathorized(error):
+        return jsonify({
+            "success": False,
+            "error": 401,
+            "message": error.description,
+        }), 401
+
+
+    # handle forbidden requests
+    @app.errorhandler(403)
+    def forbidden(error):
+        return jsonify({
+            "success": False,
+            "error": 403,
+            "message": "You are forbidden from accessing this resource",
+        }), 403
 
 
     return app
