@@ -4,7 +4,10 @@ import os
 import sys
 import json
 
-database_path = os.environ['DATABASE_URL']
+if os.environ['ENV'] == 'test':
+    database_path = os.environ['TEST_DATABASE_URL']
+else:
+    database_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
@@ -26,24 +29,12 @@ class Movie(db.Model):
     __tablename__ = 'movies'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String)
-    release_date = Column(DateTime())
+    title = Column(String, nullable=False)
+    release_date = Column(DateTime(), nullable=False)
 
     def __init__(self, title, release_date):
         self.title = title
         self.release_date = release_date
-
-
-    # def insert(self):
-    #     try:
-    #         db.session.add(self)
-    #         db.session.commit()
-    #     except SQLAlchemyError:
-    #         db.session.rollback()
-    #         print(sys.exc_info())
-    #         # raise
-    #     finally:
-    #         db.session.close()
     
     def insert(self):
         db.session.add(self)
@@ -65,7 +56,6 @@ class Movie(db.Model):
             'release_date': self.release_date}
   
 
-
 '''
 Actor
 Have name, age, and gender
@@ -74,9 +64,9 @@ class Actor(db.Model):
     __tablename__ = 'actors'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    age = Column(Integer)
-    gender = Column(String)
+    name = Column(String, nullable=False)
+    age = Column(Integer, nullable=False)
+    gender = Column(String, nullable=False)
 
     def __init__(self, name, age, gender):
         self.name = name

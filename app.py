@@ -218,6 +218,24 @@ def create_app(test_config=None):
             "message": "Bad Request, pls check your inputs"
         }), 400
 
+    # handle unauthorized request errors
+    @app.errorhandler(401)
+    def unathorized(error):
+        return jsonify({
+            "success": False,
+            "error": 401,
+            "message": error.description,
+        }), 401
+
+    # handle forbidden requests
+    @app.errorhandler(403)
+    def forbidden(error):
+        return jsonify({
+            "success": False,
+            "error": 403,
+            "message": "You are forbidden from accessing this resource",
+        }), 403
+
     # handle resource not found errors
     @app.errorhandler(404)
     def not_found(error):
@@ -233,25 +251,6 @@ def create_app(test_config=None):
             "success": False,
             "message": "Something went wrong, please try again"
         }), 500
-
-    # handle unauthorized request errors
-    @app.errorhandler(401)
-    def unathorized(error):
-        return jsonify({
-            "success": False,
-            "error": 401,
-            "message": error.description,
-        }), 401
-
-
-    # handle forbidden requests
-    @app.errorhandler(403)
-    def forbidden(error):
-        return jsonify({
-            "success": False,
-            "error": 403,
-            "message": "You are forbidden from accessing this resource",
-        }), 403
 
 
     return app
