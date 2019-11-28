@@ -10,6 +10,7 @@ manager = Manager(app)
 
 manager.add_command('db', MigrateCommand)
 
+# custom seed command
 @manager.command
 def seed():
     Movie(title='Black Panther', release_date='2018-12-12').insert()

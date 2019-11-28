@@ -1,6 +1,5 @@
 env
 venv
-setup.sh
 .vscode/
 __pycache__/
 migrations/__pycache__/
