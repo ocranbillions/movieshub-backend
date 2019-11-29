@@ -16,7 +16,6 @@ def create_app(test_config=None):
     def welcome():
         return 'Welcome to Movies Hub!'
 
-
     @app.route('/movies')
     @requires_auth('get:movies')
     def get_movies(jwt):
@@ -25,8 +24,7 @@ def create_app(test_config=None):
             'success': True,
             'movies': [movie.format() for movie in movies],
         }), 200
-        
-        
+
     @app.route('/movies/<int:id>')
     @requires_auth('get:movies')
     def get_movie_by_id(jwt, id):
@@ -39,7 +37,6 @@ def create_app(test_config=None):
                 'success': True,
                 'movie': movie.format(),
             }), 200
-    
 
     @app.route('/movies', methods=['POST'])
     @requires_auth('post:movies')
@@ -47,7 +44,7 @@ def create_app(test_config=None):
         data = request.get_json()
         title = data.get('title', '')
         date = data.get('release_date', '')
-        
+
         movie = Movie(title=title, release_date=date)
         if validate_movie(movie) is False:
             abort(400)
@@ -60,7 +57,6 @@ def create_app(test_config=None):
             }), 201
         except:
             abort(500)
-    
 
     @app.route('/movies/<int:id>', methods=['PATCH'])
     @requires_auth('patch:movies')
@@ -90,7 +86,6 @@ def create_app(test_config=None):
             db.session.rollback()
             abort(500)
 
-    
     @app.route('/movies/<int:id>', methods=['DELETE'])
     @requires_auth('delete:movies')
     def delete_movie(jwt, id):
@@ -108,10 +103,9 @@ def create_app(test_config=None):
         except:
             db.session.rollback()
             abort(500)
-    
 
     '''
-    ACTORS ENDPOINTS   
+    ACTORS ENDPOINTS
     '''
     @app.route('/actors')
     @requires_auth('get:actors')
@@ -121,8 +115,7 @@ def create_app(test_config=None):
             'success': True,
             'actors': [actor.format() for actor in actors],
         }), 200
-        
-        
+
     @app.route('/actors/<int:id>')
     @requires_auth('get:movies')
     def get_actor_by_id(jwt, id):
@@ -136,7 +129,6 @@ def create_app(test_config=None):
                 'actor': actor.format(),
             }), 200
 
-
     @app.route('/actors', methods=['POST'])
     @requires_auth('post:actors')
     def post_actor(jwt):
@@ -144,7 +136,7 @@ def create_app(test_config=None):
         name = data.get('name', '')
         age = data.get('age', '')
         gender = data.get('gender', '')
-        
+
         actor = Actor(name=name, age=age, gender=gender)
         if validate_actor(actor) is False:
             abort(400)
@@ -157,7 +149,6 @@ def create_app(test_config=None):
             }), 201
         except:
             abort(500)
-
 
     @app.route('/actors/<int:id>', methods=['PATCH'])
     @requires_auth('patch:actors')
@@ -188,7 +179,7 @@ def create_app(test_config=None):
         except:
             db.session.rollback()
             abort(500)
-    
+
     @app.route('/actors/<int:id>', methods=['DELETE'])
     @requires_auth('delete:actors')
     def delete_actor(jwt, id):
@@ -252,9 +243,7 @@ def create_app(test_config=None):
             "message": "Something went wrong, please try again"
         }), 500
 
-
     return app
-
 
 app = create_app()
 
