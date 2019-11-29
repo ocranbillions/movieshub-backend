@@ -4,9 +4,9 @@ def validate_movie(movie):
     else:
         return True
 
+
 def validate_actor(actor):
     if (actor.name == '' or actor.age == '' or actor.gender == ''):
         return False
     else:
         return True
-

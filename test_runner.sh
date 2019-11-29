@@ -1,6 +1,6 @@
 . setup.sh
 export ENV='test'
-echo 'DROPPING TABLES...'
+echo 'DROPPING TABLES... (if any)'
 python manage.py db downgrade
 
 echo 'CREATING TABLES...'
