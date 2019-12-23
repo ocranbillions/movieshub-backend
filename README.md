@@ -96,6 +96,7 @@ NOTE: ALL endpoints require a jwt access_token containing permissions gotten for
     - Auth0
     - SQLAlchemy
     - Flask-Migrate
+    - Flask-Cors
     - Flask-Script
 
 
